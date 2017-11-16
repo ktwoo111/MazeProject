@@ -75,9 +75,10 @@ def FillEdges(row,column):
 def DFS(g):
     time = 0
     reverse = False
-    u = (1,1) #starting at root
-    for point in nx.neighbors(g,u):
+    for point in g.nodes():
         if g.node[point]['Discovered'] == "WHITE":
+            if g.node[point]['Circle'] == "C":
+                reverse = not reverse
             DFS_VISIT(point,time,reverse)
 
 def DFS_VISIT(point,time,reverse):
@@ -85,43 +86,21 @@ def DFS_VISIT(point,time,reverse):
     time+=1
     g.node[point]['Start'] = time
     for nodeCoord in nx.neighbors(g, point):
-        if reverse == False:
-            if g[point][nodeCoord]['direction'] == g.node[point]['Direction']:
-                if g.node[nodeCoord]['Discovered'] == "WHITE":
+        if g.node[nodeCoord]['Discovered'] == "WHITE":
+            if reverse == False:
+                if g[point][nodeCoord]['direction'] == g.node[point]['Direction']:
                     g.node[nodeCoord]['Parent'] = point
                     if g.node[nodeCoord]['Circle'] == "C":
                         reverse = not reverse
                     DFS_VISIT(nodeCoord,time,reverse)
-        else:
-            if g[point][nodeCoord]['direction'] != g.node[point]['Direction']:
-                if g.node[nodeCoord]['Discovered'] == "WHITE":
+            else:
+                if g[point][nodeCoord]['direction'] != g.node[point]['Direction']:
                     g.node[nodeCoord]['Parent'] = point
                     if g.node[nodeCoord]['Circle'] == "C":
                         reverse = not reverse
                     DFS_VISIT(nodeCoord, time,reverse)
     g.node[point]['Discovered'] = "BLACK"
     g.node[point]['Final'] = time
-
-"""
-    while queue:
-        u = queue[0]
-        for nodeCoord in nx.neighbors(g,u):
-            if g.node[nodeCoord]['Discovered'] == "WHITE":
-                if reverse == False:
-                    if g[u][nodeCoord]['direction'] == g.node[u]['Direction']:
-                        g.node[nodeCoord]['Color'] = "GRAY"
-                        g.node[nodeCoord]['Distance'] = g.node[u]['Distance'] + 1
-                        g.node[nodeCoord]['Parent'] = u
-                        queue.append(nodeCoord)
-                elif reverse == True:
-                    if g[u][nodeCoord]['direction'] != g.node[u]['Direction']:
-                        g.node[nodeCoord]['Color'] = "GRAY"
-                        g.node[nodeCoord]['Distance'] = g.node[u]['Distance'] + 1
-                        g.node[nodeCoord]['Parent'] = u
-                        queue.append(nodeCoord)
-        queue.pop(0)
-        g.node[u]['Discovered'] = "Black"
-"""
 
 def TraceBack(nodeCoord):
     if(nodeCoord == (1,1)):
@@ -149,13 +128,15 @@ column = 0
 g = nx.DiGraph() #variable accessed globally
 row,column=ReadFileAndFillNodes("input.txt")
 FillEdges(row,column)
+
 DFS(g)
 
 discover = nx.get_node_attributes(g,'Discovered')
-colors = nx.get_node_attributes(g,'Color')
+parents = nx.get_node_attributes(g,'Parent')
 
 print(discover.items())
-
+print(parents.items())
+print(g.nodes())
 #TraceBack((row,column))
 
 #drawing plot
