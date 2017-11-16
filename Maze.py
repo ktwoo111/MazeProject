@@ -105,7 +105,7 @@ def DFS_VISIT(point,time,reverse):
 
 def BFS():
     queue = [(1,1)]
-    g.node[(1,1)]['Discovered'] = "GRAY"
+    g.node[(1,1)]['Discovered'] = "GREY"
     while queue:
         u = queue[0]
         reverse = False
@@ -129,10 +129,10 @@ def BFS():
 
 def TraceBack(nodeCoord):
     if(nodeCoord == (1,1)):
-        print(nodeCoord)
+        traceBackList.append(nodeCoord)
         return
     else:
-        print(nodeCoord)
+        traceBackList.append(nodeCoord)
         TraceBack(g.node[nodeCoord]['Parent'])
 
 def Testing():
@@ -147,13 +147,10 @@ def Testing():
     print(g.node[(6, 3)]['Color'])
     print(list(nx.neighbors(g, (6, 3))))  # blue arrow pointing NW, should be 3 items
 
-    discover = nx.get_node_attributes(g, 'Discovered')
-    parents = nx.get_node_attributes(g, 'Parent')
-
-    print(discover.items())
-    print(parents.items())
-    print(g.nodes())
-
+    for x in g.nodes():
+        print(x,end= " ")
+        print(g.node[x]['Parent'],end=" ")
+        print(g.node[x]['Discovered'])
 
 #main
 row = 0
@@ -165,7 +162,11 @@ FillEdges(row,column)
 #DFS()
 BFS()
 
+Testing()
+traceBackList = []
 TraceBack((row,column))
+traceBackList.reverse()
+print(traceBackList)
 
 #drawing plot
 nx.draw(g,with_labels=True)
