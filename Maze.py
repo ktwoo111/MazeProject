@@ -20,7 +20,7 @@ def ReadFileAndFillNodes(fileName):
 def FillEdges(row,column):
     for i in range(1, row + 1):
         for j in range(1,column+1):
-            if(g.node[(i,j)]['Direction'] == "N" or g.node[(i,j)]['Direction'] == "S"):
+            if g.node[(i,j)]['Direction'] == "N" or g.node[(i,j)]['Direction'] == "S":
                 for before in range(1,i):
                     if g.node[(i,j)]['Color'] != g.node[(before,j)]['Color']:
                         g.add_edge((i,j),(before,j),color='b',direction="N")
@@ -28,7 +28,7 @@ def FillEdges(row,column):
                     if after <= row:
                         if g.node[(i,j)]['Color'] != g.node[(after,j)]['Color']:
                             g.add_edge((i,j),(after,j),color='b',direction="S")
-            elif (g.node[(i, j)]['Direction'] == "W" or g.node[(i, j)]['Direction'] == "E"):
+            elif g.node[(i, j)]['Direction'] == "W" or g.node[(i, j)]['Direction'] == "E":
                 for before in range(1,j):
                     if g.node[(i, j)]['Color'] != g.node[(i, before)]['Color']:
                         g.add_edge((i,j),(i,before),color='b',direction="W")
@@ -36,7 +36,7 @@ def FillEdges(row,column):
                     if after <= column:
                         if g.node[(i, j)]['Color'] != g.node[(i,after)]['Color']:
                             g.add_edge((i,j),(i,after),direction="E")
-            elif (g.node[(i, j)]['Direction'] == "NW" or g.node[(i, j)]['Direction'] == "SE"):
+            elif g.node[(i, j)]['Direction'] == "NW" or g.node[(i, j)]['Direction'] == "SE":
                 beforeRow = i-1
                 beforeColumn = j-1
                 while beforeRow >= 1 and beforeColumn >= 1:
@@ -52,7 +52,7 @@ def FillEdges(row,column):
                         g.add_edge((i,j),(afterRow,afterColumn),color='b',direction= "SE")
                     afterRow+=1
                     afterColumn+=1
-            elif (g.node[(i, j)]['Direction'] == "NE" or g.node[(i, j)]['Direction'] == "SW"):
+            elif g.node[(i, j)]['Direction'] == "NE" or g.node[(i, j)]['Direction'] == "SW":
                 beforeRow = i+1
                 beforeColumn = j-1
                 while beforeRow <= row and beforeColumn >= 1:
@@ -72,7 +72,7 @@ def FillEdges(row,column):
 
 
 
-def DFS(g):
+def DFS():
     time = 0
     reverse = False
     for point in g.nodes():
@@ -102,8 +102,34 @@ def DFS_VISIT(point,time,reverse):
     g.node[point]['Discovered'] = "BLACK"
     g.node[point]['Final'] = time
 
+
+def BFS():
+    queue = [(1,1)]
+    g.node[(1,1)]['Discovered'] = "GRAY"
+    while queue:
+        u = queue[0]
+        reverse = False
+        if(g.node[u]['Circle'] == "C"):
+            reverse = True
+        for nodeCoord in nx.neighbors(g, u):
+            if g.node[nodeCoord]['Discovered'] == "WHITE":
+                if(reverse == False):
+                    if g[u][nodeCoord]['direction'] == g.node[u]['Direction']:
+                        g.node[nodeCoord]['Discovered'] = "GRAY"
+                        g.node[nodeCoord]['Parent'] = u
+                        queue.append(nodeCoord)
+                else:
+                    if g[u][nodeCoord]['direction'] != g.node[u]['Direction']:
+                        g.node[nodeCoord]['Discovered'] = "GRAY"
+                        g.node[nodeCoord]['Parent'] = u
+                        queue.append(nodeCoord)
+        queue.pop(0)
+        g.node[u]['Discovered'] = "BLACK"
+
+
 def TraceBack(nodeCoord):
     if(nodeCoord == (1,1)):
+        print(nodeCoord)
         return
     else:
         print(nodeCoord)
@@ -121,6 +147,13 @@ def Testing():
     print(g.node[(6, 3)]['Color'])
     print(list(nx.neighbors(g, (6, 3))))  # blue arrow pointing NW, should be 3 items
 
+    discover = nx.get_node_attributes(g, 'Discovered')
+    parents = nx.get_node_attributes(g, 'Parent')
+
+    print(discover.items())
+    print(parents.items())
+    print(g.nodes())
+
 
 #main
 row = 0
@@ -129,15 +162,10 @@ g = nx.DiGraph() #variable accessed globally
 row,column=ReadFileAndFillNodes("input.txt")
 FillEdges(row,column)
 
-DFS(g)
+#DFS()
+BFS()
 
-discover = nx.get_node_attributes(g,'Discovered')
-parents = nx.get_node_attributes(g,'Parent')
-
-print(discover.items())
-print(parents.items())
-print(g.nodes())
-#TraceBack((row,column))
+TraceBack((row,column))
 
 #drawing plot
 nx.draw(g,with_labels=True)
