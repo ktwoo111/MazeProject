@@ -106,6 +106,7 @@ def DFS_VISIT(point,time,reverse):
 def BFS():
     queue = [(1,1)]
     g.node[(1,1)]['Discovered'] = "GREY"
+
     while queue:
         u = queue[0]
         reverse = False
@@ -113,12 +114,12 @@ def BFS():
             reverse = True
         for nodeCoord in nx.neighbors(g, u):
             if g.node[nodeCoord]['Discovered'] == "WHITE":
-                if(reverse == False):
+               if(reverse == False):
                     if g[u][nodeCoord]['direction'] == g.node[u]['Direction']:
                         g.node[nodeCoord]['Discovered'] = "GRAY"
                         g.node[nodeCoord]['Parent'] = u
                         queue.append(nodeCoord)
-                else:
+               else:
                     if g[u][nodeCoord]['direction'] != g.node[u]['Direction']:
                         g.node[nodeCoord]['Discovered'] = "GRAY"
                         g.node[nodeCoord]['Parent'] = u
