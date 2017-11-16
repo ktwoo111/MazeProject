@@ -14,7 +14,8 @@ g.add_edge("(2,1)","(3,1)",color='r')
 g.add_edge("(2,1)","(4,1)",color='r')
 
 #get position of all the nodes
-#pos = nx.get_node_attributes(g,'pos')
+pos = nx.get_node_attributes(g,'message')
+print(pos[0])
 #circle = nx.get_node_attributes(g,'circle')
 
 
@@ -36,5 +37,12 @@ colors = [g[u][v]['color'] for u,v in edges]
 nx.draw(g,with_labels=True,edge_color=colors)
 
 plt.show()
+
+
+queue = []
+queue.append(1)
+queue.append(2)
+queue.pop(0)
+print(queue)
 
 
