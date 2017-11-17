@@ -19,18 +19,21 @@ def ReadFileAndFillNodes(fileName):
     return int(row),int(column)
 
 def FillEdges(row,column):
+    counter = 0
     for i in range(1, row + 1):
         for j in range(1,column+1):
-            if g.node[(i,j)]['Circle'] == "C": # connecting the circle nodes to its reverse copy
+            if g.node[(i,j)]['Circle'] == "C" or (i == 1 and j == 1) or (i ==7 and j == 7): # connecting the circle nodes to its reverse copy
                 g.add_edge((i,j), (i,j,"R"), color='r', direction="R")
                 g.add_edge((i,j,"R"),(i,j),color='r', direction = "R")
+
+
             if g.node[(i,j)]['Direction'] == "N":
                 for before in range(1,i):
                     if g.node[(i,j)]['Color'] != g.node[(before,j)]['Color']:
                         g.add_edge((i,j),(before,j),color='b',direction="N")
             elif g.node[(i, j)]['Direction'] == "S":
                 for after in range(i+1,row+1):
-                    #if after <= row:
+                    if after <= row:
                         if g.node[(i,j)]['Color'] != g.node[(after,j)]['Color']:
                             g.add_edge((i,j),(after,j),color='b',direction="S")
             elif g.node[(i, j)]['Direction'] == "W":
@@ -39,7 +42,7 @@ def FillEdges(row,column):
                         g.add_edge((i,j),(i,before),color='b',direction="W")
             elif g.node[(i, j)]['Direction'] == "E":
                 for after in range(j+1,column+1):
-                    #if after <= column:
+                    if after <= column:
                         if g.node[(i, j)]['Color'] != g.node[(i,after)]['Color']:
                             g.add_edge((i,j),(i,after),direction="E")
             elif g.node[(i, j)]['Direction'] == "NW":
@@ -82,7 +85,7 @@ def FillEdges(row,column):
                         g.add_edge((i,j,"R"),(before,j,"R"),color='b',direction="N")
             elif g.node[(i, j,"R")]['Direction'] == "S":
                 for after in range(i+1,row+1):
-                    #if after <= row:
+                    if after <= row:
                         if g.node[(i,j,"R")]['Color'] != g.node[(after,j,"R")]['Color']:
                             g.add_edge((i,j,"R"),(after,j,"R"),color='b',direction="S")
             elif g.node[(i, j,"R")]['Direction'] == "W":
@@ -91,7 +94,7 @@ def FillEdges(row,column):
                         g.add_edge((i,j,"R"),(i,before,"R"),color='b',direction="W")
             elif g.node[(i, j,"R")]['Direction'] == "E":
                 for after in range(j+1,column+1):
-                    #if after <= column:
+                    if after <= column:
                         if g.node[(i, j,"R")]['Color'] != g.node[(i,after,"R")]['Color']:
                             g.add_edge((i,j,"R"),(i,after,"R"),direction="E")
             elif g.node[(i, j,"R")]['Direction'] == "NW":
@@ -127,6 +130,7 @@ def FillEdges(row,column):
                         afterRow-=1
                         afterColumn+=1
 
+
 def CleanUp():
     nodeList = list(g.nodes())
     for x in nodeList:
@@ -137,7 +141,9 @@ def DisplayResult():
     dict = {}
     print("size of traversal: ", end=" ")
     print(len(list(nx.dfs_tree(g,(1,1)).nodes())))
+    print(len(list(nx.dfs_tree(g, (1, 1)).edges())))
     print(len(list(nx.bfs_tree(g,(1,1)).nodes())))
+    print(len(list(nx.bfs_tree(g, (1, 1)).edges())))
     print("size of nodes: ",end = " ")
     print(len(list(g.nodes())))
     for parent,child in nx.dfs_tree(g, (1, 1)).edges():
@@ -174,3 +180,15 @@ print(OrderedDict((x,True) for x in traceBackList).keys())
 #drawing plot
 #nx.draw(g,with_labels=True)
 #plt.show()
+
+
+
+#sanity checks
+t = nx.DiGraph()
+t.add_node(1)
+t.add_node(2)
+t.add_edge(1,2)
+print(list(t.neighbors(1)))
+print(list(t.neighbors(2)))
+nx.draw(t,with_labels=True)
+plt.show()
