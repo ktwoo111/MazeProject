@@ -7,8 +7,6 @@ from collections import OrderedDict
 def ReadFileAndFillNodes(fileName):
     file=open(fileName,'r')
     row,column = file.readline().split()
-    grid = [[0 for i in range(int(column))] for j in range(int(row))]
-   # print(row+ "and " +  column)
     reverseDict = {"N": "S", "S": "N", "W": "E", "E": "W", "NE": "SW", "SW": "NE", "NW": "SE", "SE": "NW", "X": "X"}
     for i in range(int(row)):
         for j in range(int(column)):
@@ -182,16 +180,16 @@ def CleanUp():
 
 def DisplayResult():
     dict = {}
-    #print("size of traversal: ", end=" ")
-    #print(len(list(nx.dfs_tree(g,(1,1)).nodes())))
-    #print(len(list(nx.dfs_tree(g, (1, 1)).edges())))
-    #print(len(list(nx.bfs_tree(g,(1,1)).nodes())))
-    #print(len(list(nx.bfs_tree(g, (1, 1)).edges())))
-    #print("size of nodes: ",end = " ")
-    #print(len(list(g.nodes())))
     for parent,child in nx.dfs_tree(g, (1, 1)).edges():
         dict.update({child:parent})
+
     DisplayRoute((7,7),dict)
+
+    traceBackList.reverse()
+    for x in range(len(traceBackList)):
+        if "R" in traceBackList[x]:
+            traceBackList[x] = traceBackList[x][0:5] + ")"
+    print(traceBackList)
 
 def DisplayRoute(child,dict):
     if (child == (1,1)):
@@ -204,18 +202,12 @@ def DisplayRoute(child,dict):
 #main
 row = 0
 column = 0
-g = nx.DiGraph() #variable accessed globally
+traceBackList = []
+g = nx.DiGraph()
+
 row,column=ReadFileAndFillNodes("input.txt")
 FillEdges(row,column)
-
-traceBackList = []
 DisplayResult()
-traceBackList.reverse()
-print(traceBackList)
-for x in range(len(traceBackList)):
-    if "R" in traceBackList[x]:
-        traceBackList[x] = traceBackList[x][0:5]+")"
-print(traceBackList)
 
 #drawing plot
 nx.draw(g,with_labels=True)
