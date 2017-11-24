@@ -11,18 +11,24 @@ def ReadFileAndFillNodes(fileName):
     for i in range(int(row)):
         for j in range(int(column)):
             numRow,numColumn,color,circle,direction = file.readline().split()
-            g.add_node((int(numRow),int(numColumn)),Color=color,Circle=circle,Direction=direction,Parent=None) #adding normal node
-            g.add_node((int(numRow),int(numColumn),"R"),Color=color,Circle=circle,Direction=reverseDict[direction],Parent=None) #adding reverse node
+            # adding normal node
+            g.add_node((int(numRow),int(numColumn)),Color=color,Circle=circle,Direction=direction,Parent=None)
+            # adding reverse node
+            g.add_node((int(numRow),int(numColumn),"R"),Color=color,Circle=circle,Direction=reverseDict[direction],Parent=None)
     file.close()
     return int(row),int(column)
 
 def FillEdges(row,column):
     for i in range(1, row + 1):
         for j in range(1,column+1):
+            #going through all the normal nodes
             if g.node[(i,j)]['Direction'] == "N":
                 for before in range(1,i):
                     if g.node[(i,j)]['Color'] != g.node[(before,j)]['Color']:
+                        #add to edge if the colors don't match (ex. Red -> Blue or Blue -> X)
                         if g.node[(before,j)]['Circle'] == "C":
+                            # if one of the vertice is a circle, connect to the reverse node
+                            # (et. node on the other layer)
                             g.add_edge((i,j),(before,j,"R"))
                         else:
                             g.add_edge((i,j),(before,j),color='b')
@@ -94,7 +100,7 @@ def FillEdges(row,column):
                         afterRow-=1
                         afterColumn+=1
 
-
+            #going through all the reverse nodes
             if g.node[(i,j,"R")]['Direction'] == "N":
                 for before in range(1,i):
                     if g.node[(i,j,"R")]['Color'] != g.node[(before,j,"R")]['Color']:
@@ -171,13 +177,6 @@ def FillEdges(row,column):
                         afterRow-=1
                         afterColumn+=1
 
-
-def CleanUp():
-    nodeList = list(g.nodes())
-    for x in nodeList:
-        if len(list(nx.neighbors(g,x))) == 0 and x != (7,7):
-            g.remove_node(x)
-
 def DisplayResult():
     dict = {}
     for parent,child in nx.dfs_tree(g, (1, 1)).edges():
@@ -185,13 +184,15 @@ def DisplayResult():
 
     DisplayRoute((7,7),dict)
 
-    traceBackList.reverse()
+    traceBackList.reverse() #must reverse so that starting point is the first point
     for x in range(len(traceBackList)):
+        #get rid of all the "R" notations in reverse nodes since that was mainly for the graph traversal
         if "R" in traceBackList[x]:
             traceBackList[x] = traceBackList[x][0:5] + ")"
-    print(traceBackList)
+    for x in traceBackList:
+        print(x,end=" ")
 
-def DisplayRoute(child,dict):
+def DisplayRoute(child,dict): #going through DFS tree until hitting starting point
     if (child == (1,1)):
         traceBackList.append(str(child))
         return
@@ -212,5 +213,7 @@ DisplayResult()
 #drawing plot
 nx.draw(g,with_labels=True)
 plt.show()
+
+
 
 
